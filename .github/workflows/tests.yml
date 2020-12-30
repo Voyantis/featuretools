@@ -253,4 +253,5 @@ jobs:
         run: |
           . $env:USERPROFILE\Miniconda3\shell\condabin\conda-hook.ps1
           conda activate featuretools
-          pytest featuretools\ -n 2
+          dot -V
+          python -m pytest featuretools\ -n 2
