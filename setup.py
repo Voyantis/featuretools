@@ -34,7 +34,7 @@ setup(
          'Programming Language :: Python :: 3.7'
     ],
     install_requires=open('requirements.txt').readlines(),
-    python_requires='>=3.10',
+    python_requires='>=3.7',
     extras_require=extras_require,
     keywords='feature engineering data science machine learning',
     include_package_data=True,
