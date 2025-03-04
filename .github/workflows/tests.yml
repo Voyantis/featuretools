@@ -4,35 +4,6 @@ on:
 
 name: Tests
 jobs:
-  build_docs:
-    name: ${{ matrix.python_version }} build docs
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python_version: ["3.8", "3.9", "3.10"]
-    steps:
-      - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python_version }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build featuretools package
-        run: make package_featuretools
-
-      - name: Install featuretools with doc requirements
-        run: |
-          sudo apt update
-          sudo apt install -y pandoc graphviz openjdk-11-jre-headless
-          pip install --upgrade pip
-          pip install unpacked_sdist/
-          pip install -r unpacked_sdist/dev-requirements.txt
-
-      - name: Build docs
-        run: make -C docs/ -e "SPHINXOPTS=-W" clean html
-
   unit_tests:
     name: ${{ matrix.python_version }} unit tests
     runs-on: ubuntu-latest

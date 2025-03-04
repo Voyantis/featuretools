@@ -13,3 +13,4 @@ Sphinx==3.2.1
 pydata_sphinx_theme==0.4.0
 nlp_primitives>=1.0.0
 autonormalize >= 1.0.1
+sklearn==0.0
