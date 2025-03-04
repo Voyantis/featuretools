@@ -1,5 +1,4 @@
 from os import path
-
 from setuptools import find_packages, setup
 
 dirname = path.abspath(path.dirname(__file__))
@@ -13,7 +12,6 @@ extras_require = {
     'nlp_primitives': ['nlp-primitives[complete] >= 1.0.0'],
     'autonormalize': ['autonormalize >= 1.0.0'],
     'sklearn_transformer': ['featuretools-sklearn-transformer >= 0.1.1'],
-    'koalas': open('koalas-requirements.txt').readlines(),
 }
 extras_require['complete'] = sorted(set(sum(extras_require.values(), [])))
 
