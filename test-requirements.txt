@@ -10,3 +10,4 @@ smart-open>=1.8.4
 boto3>=1.10.45
 composeml>=0.2.0
 urllib3>=1.25.10,<1.26
+sklearn==0.0
