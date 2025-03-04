@@ -1,17 +1,15 @@
 -r test-requirements.txt
 featuretools-sklearn-transformer >= 0.1.1
-codecov==2.1.8
+codecov==2.1.13
 flake8==3.7.8
 autopep8==1.4.4
-ipython==7.16.0; python_version=='3.6'
-ipython==7.18.1; python_version>'3.6'
-isort==4.3.21
+ipython>=7.18.1
+isort>=5.10.1
 jupyter==1.0.0
-matplotlib==3.2.2  # koalas and composeml pinned below 3.3.0
+matplotlib>=3.4.0
 nbconvert==6.0.6
 nbsphinx==0.7.1
 Sphinx==3.2.1
 pydata_sphinx_theme==0.4.0
 nlp_primitives>=1.0.0
 autonormalize >= 1.0.1
--r koalas-requirements.txt
