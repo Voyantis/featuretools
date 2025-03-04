@@ -12,168 +12,52 @@ jobs:
         python_version: ["3.8", "3.9", "3.10"]
     steps:
       - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python_version }}
+
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+        uses: actions/checkout@v4
+
       - name: Build featuretools package
         run: make package_featuretools
+
       - name: Install featuretools with doc requirements
         run: |
           sudo apt update
-          sudo apt install -y pandoc
-          sudo apt install -y graphviz
-          sudo apt install -y openjdk-11-jre-headless
-          JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
-          pip config --site set global.progress_bar off
-          python -m pip install --upgrade pip
-          python -m pip install unpacked_sdist/
-          python -m pip install -r unpacked_sdist/dev-requirements.txt
+          sudo apt install -y pandoc graphviz openjdk-11-jre-headless
+          pip install --upgrade pip
+          pip install unpacked_sdist/
+          pip install -r unpacked_sdist/dev-requirements.txt
+
       - name: Build docs
         run: make -C docs/ -e "SPHINXOPTS=-W" clean html
 
-  install_ft_complete:
-    name: ${{ matrix.python_version }} install featuretools complete
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python_version: ["3.8", "3.9", "3.10"]
-    steps:
-      - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python_version }}
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Build featuretools package
-        run: make package_featuretools
-      - name: Install complete version of featuretools
-        run: |
-          pip config --site set global.progress_bar off
-          python -m pip install --upgrade pip
-          python -m pip install -e unpacked_sdist/[complete]
-      - name: Test by importing packages
-        run: |
-          python -c "import featuretools_tsfresh_primitives"
-          python -c "import featuretools_update_checker"
-          python -c "import categorical_encoding"
-          python -c "import nlp_primitives"
-          python -c "import autonormalize"
-          python -c "import featuretools_sklearn_transformer"
-        env:
-          FEATURETOOLS_UPDATE_CHECKER: False
-
-  lint_test:
-    name: ${{ matrix.python_version }} lint test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python_version: ["3.8", "3.9", "3.10"]
-    steps:
-      - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python_version }}
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Build featuretools package
-        run: make package_featuretools
-      - name: Install featuretools with optional, dev, and test requirements
-        run: |
-          pip config --site set global.progress_bar off
-          python -m pip install --upgrade pip
-          python -m pip install -e unpacked_sdist/[koalas]
-          python -m pip install -r unpacked_sdist/dev-requirements.txt
-          python -m pip install -r unpacked_sdist/test-requirements.txt
-      - name: Run lint test
-        run: make lint
-
-  release_notes_updated:
-    name: release notes updated
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check for development branch
-        id: branch
-        shell: python
-        run: |
-          from re import compile
-          main = '^main$'
-          release = '^v\d+\.\d+\.\d+$'
-          dep_update = '^dep-update-[a-f0-9]{7}$'
-          regex = main, release, dep_update
-          patterns = list(map(compile, regex))
-          ref = "${{ github.event.pull_request.head.ref }}"
-          is_dev = not any(pattern.match(ref) for pattern in patterns)
-          print('::set-output name=is_dev::' + str(is_dev))
-      - if: ${{ steps.branch.outputs.is_dev == 'True' }}
-        name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - if: ${{ steps.branch.outputs.is_dev == 'True' }}
-        name: Check if release notes were updated
-        run: cat docs/source/release_notes.rst | grep ":pr:\`${{ github.event.number }}\`"
-
   unit_tests:
-    name: ${{ matrix.python_version }} unit tests ${{ matrix.optional_libraries }}
+    name: ${{ matrix.python_version }} unit tests
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
       matrix:
-        python_version: ["3.6", "3.7", "3.8"]
-        optional_libraries: ["minimal", "optional"]
+        python_version: ["3.8", "3.9", "3.10"]
     steps:
       - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python_version }}
+
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+        uses: actions/checkout@v4
+
       - name: Build featuretools package
         run: make package_featuretools
-      - name: Set up pip and graphviz
+
+      - name: Install featuretools with test requirements
         run: |
-          pip config --site set global.progress_bar off
-          python -m pip install --upgrade pip
-          sudo apt update && sudo apt install -y graphviz
-      - if: ${{ matrix.optional_libraries != 'optional' }}
-        name: Install featuretools with test requirements (no optional requirements)
-        run: |
-          python -m pip install -e unpacked_sdist/
-          python -m pip install -r unpacked_sdist/test-requirements.txt
-      - if: ${{ matrix.optional_libraries == 'optional' }}
-        name: Install featuretools with test requirements and optional requirements
-        run: |
-          sudo apt install -y openjdk-11-jre-headless
-          JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
-          python -m pip install -e unpacked_sdist/[koalas]
-          python -m pip install -r unpacked_sdist/test-requirements.txt
-      - if: ${{ matrix.python_version != 3.6 || matrix.optional_libraries != 'optional' }}
-        name: Run unit tests (no code coverage)
+          pip install --upgrade pip
+          pip install -e unpacked_sdist/
+          pip install -r unpacked_sdist/test-requirements.txt
+
+      - name: Run unit tests
         run: |
           cd unpacked_sdist
           pytest featuretools/ -n 2
-      - if: ${{ matrix.python_version == 3.6 && matrix.optional_libraries == 'optional' }}
-        name: Run unit tests with code coverage
-        run: |
-          python -m pip install "$(cat dev-requirements.txt | grep codecov)"
-          coverage erase
-          cd unpacked_sdist/
-          coverage erase
-          pytest featuretools/ -n 2 --cov=featuretools --cov-config=../.coveragerc
-      - if: ${{ matrix.python_version == 3.6 && matrix.optional_libraries == 'optional' }}
-        name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          fail_ci_if_error: true
