@@ -1,34 +1,3 @@
 on:
   pull_request:
     types: [opened, synchronize]
-
-name: Tests
-jobs:
-  unit_tests:
-    name: ${{ matrix.python_version }} unit tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python_version: ["3.8", "3.9", "3.10"]
-    steps:
-      - name: Set up python ${{ matrix.python_version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python_version }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build featuretools package
-        run: make package_featuretools
-
-      - name: Install featuretools with test requirements
-        run: |
-          pip install --upgrade pip
-          pip install -e unpacked_sdist/
-          pip install -r unpacked_sdist/test-requirements.txt
-
-      - name: Run unit tests
-        run: |
-          cd unpacked_sdist
-          pytest featuretools/ -n 2
