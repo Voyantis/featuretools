@@ -1,6 +1,7 @@
+import pkg_resources
+
 import click
 import pandas as pd
-import pkg_resources
 
 import featuretools
 from featuretools.utils.cli_utils import print_info

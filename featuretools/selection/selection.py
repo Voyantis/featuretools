@@ -1,7 +1,7 @@
 from typing import List
 
-from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 from featuretools import variable_types as vtypes
 

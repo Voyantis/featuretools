@@ -926,4 +926,3 @@ class LastNotNull(AggregationPrimitive):
             return x.loc[idx] if idx is not None else None
 
         return pd_first_not_null
-

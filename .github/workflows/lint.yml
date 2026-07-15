@@ -1,0 +1,22 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+name: Lint
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install linters
+        run: pip install flake8==3.7.8 isort==4.3.21
+      - name: flake8
+        run: flake8 featuretools
+      - name: isort
+        run: isort --check-only --recursive featuretools

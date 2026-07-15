@@ -10,6 +10,8 @@ import featuretools as ft
 from featuretools.entityset.relationship import RelationshipPath
 from featuretools.primitives import (
     Count,
+    FirstNotNull,
+    LastNotNull,
     Mean,
     Median,
     NMostCommon,
@@ -18,9 +20,7 @@ from featuretools.primitives import (
     Sum,
     TimeSinceFirst,
     TimeSinceLast,
-    get_aggregation_primitives,
-    FirstNotNull,
-    LastNotNull
+    get_aggregation_primitives
 )
 from featuretools.primitives.base import (
     AggregationPrimitive,
